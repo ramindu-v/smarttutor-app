@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTutor - My account</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="flex-grow-1">
+                <h4 id="pageTitle">My Account</h4>
+                <small class="text-muted" id="pageSubtitle">Password and availability</small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 teacher-only d-none">
+                <div class="card-box">
+                    <h5><i class="fas fa-user-clock me-2"></i>My availability</h5>
+                    <p class="small text-muted">Days you can teach. The scheduler only places your classes on these days. If a class is already on a day you remove, the coordinator is told so it can be moved.</p>
+                    <form id="availForm"><div id="days" class="d-flex flex-wrap gap-3 mb-3"></div>
+                        <button class="btn btn-brand"><i class="fas fa-save me-2"></i>Save availability</button></form>
+                    <div id="myClasses" class="mt-3 small"></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card-box">
+                    <h5><i class="fas fa-key me-2"></i>Change password</h5>
+                    <form id="pwForm">
+                        <div class="mb-2"><label class="form-label" for="cur">Current password</label><input type="password" class="form-control" id="cur" autocomplete="current-password" required></div>
+                        <div class="mb-3"><label class="form-label" for="nw">New password</label><input type="password" class="form-control" id="nw" minlength="6" autocomplete="new-password" required></div>
+                        <button class="btn btn-brand"><i class="fas fa-save me-2"></i>Change password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pages/account.js"></script>
+</body>
+</html>

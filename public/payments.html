@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTutor - Payments</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="flex-grow-1">
+                <h4 id="pageTitle">Fee Payments</h4>
+                <small class="text-muted" id="pageSubtitle">Fee collection, receipts and reminders</small>
+            </div>
+        </div>
+        <div class="card-box no-print">
+            <div class="d-flex justify-content-between align-items-end flex-wrap gap-2">
+                <div><label class="form-label" for="month"><strong>Month</strong></label><input type="month" class="form-control" id="month"></div>
+                <div class="d-flex gap-2 flex-wrap admin-only d-none">
+                    <button class="btn btn-outline-warning" id="remindBtn"><i class="fas fa-bell me-2"></i>Send reminders to unpaid</button>
+                    <button class="btn btn-outline-success" id="exportBtn"><i class="fas fa-file-csv me-2"></i>Export</button>
+                    <button class="btn btn-brand" id="recordBtn"><i class="fas fa-plus me-2"></i>Record payment</button>
+                </div>
+            </div>
+        </div>
+        <div class="row g-3 mb-4" id="summary"></div>
+        <div class="card-box">
+            <ul class="nav nav-tabs mb-3" role="tablist">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabDues" type="button">Fees for the month</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabHistory" type="button">Payment history</button></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="tabDues">
+                    <div class="d-flex gap-2 mb-2 admin-only d-none">
+                        <input type="search" class="form-control" id="dq" placeholder="Search student" style="max-width:260px">
+                        <select class="form-select w-auto" id="dFilter"><option value="">Everyone</option><option value="unpaid" selected>Unpaid</option><option value="paid">Paid</option></select>
+                    </div>
+                    <div class="table-responsive"><table class="table table-hover">
+                        <thead><tr><th>Student</th><th>Grade</th><th>Fee</th><th>Status</th><th class="text-end"></th></tr></thead>
+                        <tbody id="dues"></tbody></table></div>
+                </div>
+                <div class="tab-pane fade" id="tabHistory">
+                    <input type="search" class="form-control mb-2 admin-only d-none" id="hq" placeholder="Search name, ID or receipt" style="max-width:300px">
+                    <div class="table-responsive"><table class="table table-hover">
+                        <thead><tr><th>Receipt</th><th>Student</th><th>For</th><th>Amount</th><th>Method</th><th>Paid on</th><th></th></tr></thead>
+                        <tbody id="history"></tbody></table></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="payModal" tabindex="-1">
+            <div class="modal-dialog"><div class="modal-content"><form id="payForm" novalidate>
+                <div class="modal-header"><h5 class="modal-title">Record payment</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label" for="pStudent">Student</label>
+                        <input class="form-control" id="pStudent" list="studentList" placeholder="Type a name or student ID" autocomplete="off" required>
+                        <datalist id="studentList"></datalist></div>
+                    <div class="row g-2">
+                        <div class="col-6"><label class="form-label" for="pMonth">For month</label><input type="month" class="form-control" id="pMonth" required></div>
+                        <div class="col-6"><label class="form-label" for="pAmount">Amount (Rs)</label><input type="number" min="1" class="form-control" id="pAmount" required></div>
+                        <div class="col-12"><label class="form-label" for="pMethod">Method</label><select class="form-select" id="pMethod"><option>cash</option><option>bank transfer</option><option>card</option><option>online</option></select></div>
+                    </div>
+                    <div class="alert alert-danger mt-3 d-none" id="payError"></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-brand"><i class="fas fa-receipt me-2"></i>Save and print receipt</button></div>
+            </form></div></div>
+        </div>
+    </main>
+
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pages/payments.js"></script>
+</body>
+</html>

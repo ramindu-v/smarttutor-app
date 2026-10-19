@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTutor - Login</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="login-page">
+    <div class="container">
+        <div class="login-container row g-0">
+            <div class="col-md-5 login-left">
+                <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+                <h1>SmartTutor</h1>
+                <p>Intelligent Tuition Class Scheduler</p>
+                <p class="mt-3">AI-powered scheduling for smarter education management</p>
+                <div class="mt-4">
+                    <i class="fas fa-brain fa-2x mb-3"></i>
+                    <p><small>FutureMinds Tuition Center, Kandy</small></p>
+                </div>
+            </div>
+            <div class="col-md-7 login-right">
+                <h2 class="mb-2">Welcome back!</h2>
+                <p class="text-muted mb-4">Log in with your account. Pick a role below to fill in a demo login.</p>
+
+                <div class="d-flex gap-2 mb-4" role="group" aria-label="Demo roles">
+                    <button type="button" class="role-btn" data-user="admin" data-pass="admin123"><i class="fas fa-user-shield"></i>Admin</button>
+                    <button type="button" class="role-btn" data-user="coordinator" data-pass="coord123"><i class="fas fa-calendar-check"></i>Coordinator</button>
+                    <button type="button" class="role-btn" data-user="teacher" data-pass="teacher123"><i class="fas fa-chalkboard-teacher"></i>Teacher</button>
+                    <button type="button" class="role-btn" data-user="student" data-pass="student123"><i class="fas fa-user-graduate"></i>Student</button>
+                </div>
+
+                <form id="loginForm" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label" for="username">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input id="username" type="text" class="form-control" placeholder="Enter username" autocomplete="username" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="password">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input id="password" type="password" class="form-control" placeholder="Enter password" autocomplete="current-password" required>
+                            <button class="btn btn-outline-secondary" type="button" id="togglePass" aria-label="Show password"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div class="alert alert-danger d-none" id="loginError" role="alert"></div>
+                    <button type="submit" class="btn btn-brand w-100 py-2" id="loginBtn">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </button>
+                    <p class="text-center text-muted small mt-3 mb-0">Forgot your password? Ask the centre's administrator to reset it.</p>
+                </form>
+
+                <div class="mt-4 text-center text-muted">
+                    <small>Demo logins: admin / admin123 · coordinator / coord123 · teacher / teacher123 · student / student123</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        const form = document.getElementById('loginForm');
+        const err = document.getElementById('loginError');
+        const next = new URLSearchParams(location.search).get('next');
+
+        document.querySelectorAll('.role-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.role-btn').forEach((b) => b.classList.remove('active'));
+                btn.classList.add('active');
+                form.username.value = btn.dataset.user;
+                form.password.value = btn.dataset.pass;
+            });
+        });
+
+        document.getElementById('togglePass').addEventListener('click', () => {
+            form.password.type = form.password.type === 'password' ? 'text' : 'password';
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            err.classList.add('d-none');
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            try {
+                await App.api('/auth/login', { method: 'POST', body: { username: form.username.value, password: form.password.value } });
+                // only follow relative links back into the app
+                location.href = next && /^[a-z]+\.html(\?.*)?$/.test(next) ? next : 'dashboard.html';
+            } catch (ex) {
+                err.textContent = ex.message;
+                err.classList.remove('d-none');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        // already logged in? go straight to the dashboard
+        fetch('/api/auth/session').then((r) => r.json()).then((d) => { if (d.user) location.href = 'dashboard.html'; }).catch(() => {});
+    </script>
+</body>
+</html>

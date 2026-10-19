@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTutor - Teachers</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="flex-grow-1">
+                <h4 id="pageTitle">Teacher Management</h4>
+                <small class="text-muted" id="pageSubtitle">Profiles, subjects, availability and workload</small>
+            </div>
+        </div>
+        <ul class="nav nav-pills mb-3 no-print" role="tablist">
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tabTeachers" type="button">Teachers</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabClasses" type="button">Classes</button></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="tabTeachers">
+                <div class="card-box">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <input type="search" class="form-control" id="tq" placeholder="Search teachers" style="max-width:240px">
+                            <select class="form-select w-auto" id="tBranch"><option value="">All branches</option></select>
+                        </div>
+                        <button class="btn btn-brand admin-only d-none" id="addTeacher"><i class="fas fa-plus me-2"></i>Add teacher</button>
+                    </div>
+                    <div class="table-responsive"><table class="table table-hover">
+                        <thead><tr><th>Teacher</th><th>Subjects</th><th>Available days</th><th>Classes</th><th>Workload</th><th class="text-end">Actions</th></tr></thead>
+                        <tbody id="tRows"><tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-spin"></i></td></tr></tbody>
+                    </table></div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tabClasses">
+                <div class="card-box">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <select class="form-select w-auto" id="cBranch"></select>
+                        <button class="btn btn-brand" id="addClass"><i class="fas fa-plus me-2"></i>Add class</button>
+                    </div>
+                    <div class="table-responsive"><table class="table table-hover">
+                        <thead><tr><th>Class</th><th>Teacher</th><th>Students</th><th>Monthly fee</th><th>Needs</th><th>Preferred days</th><th class="text-end">Actions</th></tr></thead>
+                        <tbody id="cRows"></tbody>
+                    </table></div>
+                    <p class="small text-muted mb-0">After adding classes or changing teachers, use <a href="schedule.html">Reschedule affected classes</a> to place them in the timetable.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="teacherModal" tabindex="-1">
+            <div class="modal-dialog modal-lg"><div class="modal-content"><form id="teacherForm" novalidate>
+                <div class="modal-header"><h5 class="modal-title" id="teacherTitle">Teacher</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                <div class="modal-body"><div class="row g-3">
+                    <div class="col-md-6"><label class="form-label" for="tName">Name *</label><input class="form-control" id="tName" required placeholder="Mr. / Ms. / Dr. ..."></div>
+                    <div class="col-md-6"><label class="form-label" for="tBranchSel">Branch *</label><select class="form-select" id="tBranchSel"></select></div>
+                    <div class="col-md-6"><label class="form-label" for="tEmail">Email</label><input type="email" class="form-control" id="tEmail"></div>
+                    <div class="col-md-6"><label class="form-label" for="tPhone">Phone</label><input class="form-control" id="tPhone"></div>
+                    <div class="col-12"><label class="form-label">Subjects *</label><div id="tSubjects" class="d-flex flex-wrap gap-3"></div></div>
+                    <div class="col-12"><label class="form-label">Available days</label><div id="tDays" class="d-flex flex-wrap gap-3"></div></div>
+                    <div class="col-md-4"><label class="form-label" for="tMax">Max classes per day</label><input type="number" min="1" max="6" class="form-control" id="tMax" value="4"></div>
+                    <div class="col-md-4 d-flex align-items-end"><div class="form-check"><input class="form-check-input" type="checkbox" id="tActive" checked><label class="form-check-label" for="tActive">Active</label></div></div>
+                    <div class="col-md-6 new-only"><label class="form-label" for="tUser">Login username</label><input class="form-control" id="tUser" placeholder="optional"></div>
+                    <div class="col-md-6 new-only"><label class="form-label" for="tPass">Login password</label><input class="form-control" id="tPass" placeholder="at least 6 characters"></div>
+                </div><div class="alert alert-danger mt-3 d-none" id="teacherError"></div></div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-brand"><i class="fas fa-save me-2"></i>Save</button></div>
+            </form></div></div>
+        </div>
+
+        <div class="modal fade" id="classModal" tabindex="-1">
+            <div class="modal-dialog"><div class="modal-content"><form id="classForm" novalidate>
+                <div class="modal-header"><h5 class="modal-title" id="classTitle">Class</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                <div class="modal-body"><div class="row g-3">
+                    <div class="col-6"><label class="form-label" for="cSubject">Subject</label><select class="form-select" id="cSubject"></select></div>
+                    <div class="col-6"><label class="form-label" for="cGrade">Grade</label><select class="form-select" id="cGrade"></select></div>
+                    <div class="col-6"><label class="form-label" for="cBranchSel">Branch</label><select class="form-select" id="cBranchSel"></select></div>
+                    <div class="col-6"><label class="form-label" for="cTeacher">Teacher</label><select class="form-select" id="cTeacher"></select></div>
+                    <div class="col-6"><label class="form-label" for="cFee">Monthly fee (Rs)</label><input type="number" min="0" class="form-control" id="cFee" value="2500"></div>
+                    <div class="col-6"><label class="form-label" for="cPref">Preferred days</label><select class="form-select" id="cPref"><option value="any">Any day</option><option value="weekday">Weekdays</option><option value="weekend">Weekends</option></select></div>
+                    <div class="col-12"><div class="form-check"><input class="form-check-input" type="checkbox" id="cLab"><label class="form-check-label" for="cLab">Needs a laboratory</label></div></div>
+                </div><div class="alert alert-danger mt-3 d-none" id="classError"></div></div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-brand"><i class="fas fa-save me-2"></i>Save</button></div>
+            </form></div></div>
+        </div>
+    </main>
+
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pages/teachers.js"></script>
+</body>
+</html>

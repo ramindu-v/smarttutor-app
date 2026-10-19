@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTutor - Schedule</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="flex-grow-1">
+                <h4 id="pageTitle">AI-Powered Class Scheduling</h4>
+                <small class="text-muted" id="pageSubtitle">Timetables generated with a Prolog constraint solver</small>
+            </div>
+        </div>
+        <div class="ai-card no-print staff-only d-none">
+            <i class="fas fa-brain ai-icon"></i>
+            <h4><i class="fas fa-robot me-2"></i>Intelligent Scheduling Engine</h4>
+            <p class="mb-3">A Prolog constraint solver places every class in a day, time and room. It searches the most constrained classes first and checks ahead so that no later class is left without a place.</p>
+            <div class="row">
+                <div class="col-6 col-md-3"><div class="constraint-badge"><i class="fas fa-check-circle me-1"></i> No teacher, room or grade clashes</div></div>
+                <div class="col-6 col-md-3"><div class="constraint-badge"><i class="fas fa-users me-1"></i> Room capacity and labs</div></div>
+                <div class="col-6 col-md-3"><div class="constraint-badge"><i class="fas fa-clock me-1"></i> Teacher availability and daily limit</div></div>
+                <div class="col-6 col-md-3"><div class="constraint-badge"><i class="fas fa-sliders-h me-1"></i> Preferences, lunch break and spacing</div></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 staff-only d-none no-print">
+                <div class="card-box">
+                    <h5><i class="fas fa-cog me-2"></i>Schedule parameters</h5>
+                    <form id="genForm">
+                        <div class="mb-3">
+                            <label class="form-label" for="week">Week</label>
+                            <input type="week" class="form-control" id="week" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="branch">Location</label>
+                            <select class="form-select" id="branch"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Grades</label>
+                            <div id="grades" class="d-flex flex-wrap gap-2"></div>
+                            <small class="text-muted">Grades you leave out keep their current times.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="priority">Optimisation priority</label>
+                            <select class="form-select" id="priority">
+                                <option value="balanced" selected>Balanced approach</option>
+                                <option value="workload">Spread teacher workload</option>
+                                <option value="rooms">Best room fit (fewest empty seats)</option>
+                                <option value="preference">Student preference (weekday / weekend)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="maxPerDay">Max classes per teacher per day</label>
+                            <input type="number" class="form-control" id="maxPerDay" min="1" max="6" value="4">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Constraints</label>
+                            <div class="form-check"><input class="form-check-input" type="checkbox" id="noBackToBack" checked><label class="form-check-label" for="noBackToBack">No back-to-back classes for teachers</label></div>
+                            <div class="form-check"><input class="form-check-input" type="checkbox" id="lunchBreak" checked><label class="form-check-label" for="lunchBreak">Keep the weekend lunch break free</label></div>
+                        </div>
+                        <button class="btn btn-brand w-100" type="submit" id="genBtn"><i class="fas fa-magic me-2"></i>Generate schedule with AI</button>
+                        <button class="btn btn-outline-secondary w-100 mt-2" type="button" id="rescheduleBtn" title="Keep everything that still works and re-place only the classes whose teacher, room or class changed">
+                            <i class="fas fa-sync-alt me-2"></i>Reschedule affected classes
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col" id="ttCol">
+                <div id="preview" class="d-none"></div>
+                <div class="card-box">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                        <h5 class="mb-0" id="ttTitle"><i class="fas fa-table me-2"></i>Weekly timetable</h5>
+                        <div class="d-flex gap-2 flex-wrap no-print">
+                            <select class="form-select form-select-sm w-auto" id="viewBranch" aria-label="Branch"></select>
+                            <select class="form-select form-select-sm w-auto" id="gradeFilter" aria-label="Grade"><option value="">All grades</option></select>
+                            <button class="btn btn-sm btn-outline-primary" id="printBtn"><i class="fas fa-print me-1"></i>Print / PDF</button>
+                            <button class="btn btn-sm btn-outline-success" id="csvBtn"><i class="fas fa-file-csv me-1"></i>CSV</button>
+                        </div>
+                    </div>
+                    <div id="ttMeta" class="small text-muted mb-2"></div>
+                    <div class="timetable" id="timetable"><div class="loading"><i class="fas fa-spinner fa-spin fa-2x"></i></div></div>
+                    <p class="small text-muted mt-2 mb-0 staff-only d-none no-print"><i class="fas fa-hand-pointer me-1"></i>Click a class to move it. Every move is checked against the same Prolog rules.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="moveModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title">Move class</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                <div class="modal-body">
+                    <p id="moveInfo" class="mb-3"></p>
+                    <div class="row g-2">
+                        <div class="col-6"><label class="form-label" for="moveDay">Day</label><select class="form-select" id="moveDay"></select></div>
+                        <div class="col-6"><label class="form-label" for="moveHour">Time</label><select class="form-select" id="moveHour"></select></div>
+                        <div class="col-12"><label class="form-label" for="moveRoom">Room</label><select class="form-select" id="moveRoom"></select></div>
+                    </div>
+                    <div id="moveResult" class="mt-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-primary" id="moveCheck"><i class="fas fa-search me-1"></i>Check</button>
+                    <button class="btn btn-brand" id="moveSave"><i class="fas fa-save me-1"></i>Move class</button>
+                </div>
+            </div></div>
+        </div>
+    </main>
+
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pages/schedule.js"></script>
+</body>
+</html>

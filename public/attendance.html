@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTutor - Attendance</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="flex-grow-1">
+                <h4 id="pageTitle">Digital Attendance Management</h4>
+                <small class="text-muted" id="pageSubtitle">Mark attendance with instant parent notifications</small>
+            </div>
+        </div>
+        <div id="staffView" class="d-none">
+            <div class="card-box">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3"><label class="form-label" for="date"><strong>Date</strong></label><input type="date" class="form-control" id="date"></div>
+                    <div class="col-md-3 branch-filter"><label class="form-label" for="branch"><strong>Branch</strong></label><select class="form-select" id="branch"><option value="">All branches</option></select></div>
+                    <div class="col-md-6"><label class="form-label" for="session"><strong>Class</strong></label><select class="form-select" id="session"></select></div>
+                </div>
+            </div>
+
+            <div id="classPanel" class="d-none">
+                <div class="card-box">
+                    <div class="d-flex justify-content-between flex-wrap gap-2 mb-3">
+                        <div><h5 class="mb-1" id="classTitle"></h5><div class="text-muted small" id="classMeta"></div></div>
+                        <div id="turnout" class="text-end"></div>
+                    </div>
+                    <div class="row text-center g-2">
+                        <div class="col-3 att-stat"><div class="n text-success" id="cPresent">0</div>Present</div>
+                        <div class="col-3 att-stat"><div class="n text-danger" id="cAbsent">0</div>Absent</div>
+                        <div class="col-3 att-stat"><div class="n text-warning" id="cLate">0</div>Late</div>
+                        <div class="col-3 att-stat"><div class="n" id="cTotal">0</div>Students</div>
+                    </div>
+                </div>
+                <div class="card-box">
+                    <h5><i class="fas fa-list-check me-2"></i>Mark attendance</h5>
+                    <div id="studentList"></div>
+                    <div class="d-flex justify-content-between mt-3 flex-wrap gap-2">
+                        <button class="btn btn-outline-secondary" id="resetBtn"><i class="fas fa-undo me-2"></i>Reset all</button>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="allPresentBtn"><i class="fas fa-users me-2"></i>Mark all present</button>
+                            <button class="btn btn-brand" id="saveBtn"><i class="fas fa-save me-2"></i>Save attendance</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-box d-none" id="noClasses"><div class="empty"><i class="far fa-calendar-times fa-2x mb-2"></i><br>No classes are scheduled on this day.</div></div>
+
+            <div class="ai-card">
+                <i class="fas fa-brain ai-icon"></i>
+                <h5><i class="fas fa-brain me-2"></i>AI-powered insights</h5>
+                <div class="row mt-3" id="insights"><div class="col">Loading...</div></div>
+            </div>
+
+            <div class="card-box">
+                <h5>Quick actions</h5>
+                <div class="row g-2">
+                    <div class="col-6 col-md-3"><button class="btn btn-outline-primary w-100" id="exportBtn"><i class="fas fa-download me-2"></i>Export CSV</button></div>
+                    <div class="col-6 col-md-3 staff-only"><a class="btn btn-outline-success w-100" href="notifications.html#outbox"><i class="fas fa-envelope me-2"></i>Parent messages</a></div>
+                    <div class="col-6 col-md-3 staff-only"><a class="btn btn-outline-info w-100" href="reports.html"><i class="fas fa-chart-bar me-2"></i>View analytics</a></div>
+                    <div class="col-6 col-md-3"><a class="btn btn-outline-warning w-100" href="students.html?"><i class="fas fa-history me-2"></i>Student history</a></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="studentView" class="d-none">
+            <div class="row g-4 mb-4" id="myStats"></div>
+            <div class="row">
+                <div class="col-lg-5"><div class="card-box"><h5>By subject</h5><div id="bySubject"></div></div></div>
+                <div class="col-lg-7"><div class="card-box"><h5>History</h5><div class="table-responsive" style="max-height:520px"><table class="table table-sm">
+                    <thead><tr><th>Date</th><th>Subject</th><th>Status</th></tr></thead><tbody id="history"></tbody></table></div></div></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pages/attendance.js"></script>
+</body>
+</html>
